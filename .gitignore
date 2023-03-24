@@ -1,0 +1,9 @@
+# Rider
+.idea
+# VS Code
+.vscode
+
+*/cli
+*/bin
+*/debug
+*/obj
