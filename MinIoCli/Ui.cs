@@ -47,7 +47,7 @@ public static class Ui
         {
             new MenuItem("Connections",
                 new List<ActionType>
-                    { ActionType.AddConnection, ActionType.ShowConnection, ActionType.ChangeCurrentConnection }),
+                    { ActionType.AddConnection, ActionType.DeleteConnection, ActionType.ShowConnection, ActionType.ChangeCurrentConnection }),
             new MenuItem("Operations",
                 new List<ActionType> { ActionType.CheckMinioConnection, ActionType.CheckMinioConnectionAsInterval })
         };

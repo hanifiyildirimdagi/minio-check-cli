@@ -102,6 +102,19 @@ public static class Logic
         SetCurrentConnection(item);
     }
 
+    public static void DeleteConnection()
+    {
+        var data = ReadConnectionConfig();
+        if (data is null) throw new Exception("Connections are empty.");
+        var selection = new MultiSelectionPrompt<string>().Title("Select a [bold]connection[/] for delete:")
+            .AddChoices(data.Select(x => x.Host));
+        var results = AnsiConsole.Prompt(selection);
+        data = data.Where(x => !results.Contains(x.Host)).ToList();
+        SetConnectionConfig(data);
+        _currentConnection = null;
+        _client = null;
+    }
+
     #endregion
 
     #region [ MinIO ]
@@ -123,7 +136,7 @@ public static class Logic
                 }
                 catch (Exception e)
                 {
-                    ctx.Status($"Connection has been [bold red]failed[/]. Message: '{e.Message}'.");
+                    ctx.Status($"[bold red]Connection has been failed[/]. [bold]Message:[/] [italic]'{e.Message}'[/].");
                     Task.Delay(5000).Wait();
                 }
             });
@@ -150,7 +163,7 @@ public static class Logic
                     catch (Exception e)
                     {
                         watch.Stop();
-                        ctx.Status($"Connection has been [bold red]failed[/]. Duration {watch.ElapsedMilliseconds} ms. Message: '[italic]{e.Message}[/]'.");
+                        ctx.Status($"[bold red]Connection has been failed[/]. [bold]Message:[/] [italic]'{e.Message}'[/].");
                     }
 
                     GC.SuppressFinalize(watch);
@@ -164,7 +177,7 @@ public static class Logic
 
     public static void Start()
     {
-        selection:
+    selection:
         var select = Ui.Menu(_currentConnection!.Alias, _currentConnection.Host);
         try
         {
@@ -172,6 +185,11 @@ public static class Logic
             {
                 case ActionType.AddConnection:
                     AddConnection();
+                    break;
+                case ActionType.DeleteConnection:
+                    DeleteConnection();
+                    if(!HasAnyConfig()) AddConnection();
+                    else ChangeConnection();
                     break;
                 case ActionType.ShowConnection:
                     ListConnections();
